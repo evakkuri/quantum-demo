@@ -1,3 +1,7 @@
+/*
+View stored circuit diagrams rendered from code.
+*/
+
 import { useState, useEffect } from "react";
 
 interface CircuitData {
@@ -60,9 +64,7 @@ export default function CircuitViewer({ circuitId }: Props) {
           />
         </div>
       ) : (
-        <p className="diagram-error">
-          {data.error ?? "No diagram available"}
-        </p>
+        <p className="diagram-error">{data.error ?? "No diagram available"}</p>
       )}
 
       <div className="qasm-section">

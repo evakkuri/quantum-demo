@@ -1,3 +1,9 @@
+/*
+Component for creating new circuit diagrams.
+
+Validates QASM code against backend when writing.
+*/
+
 import { useState, useEffect } from "react";
 import QasmReference from "./QasmReference";
 

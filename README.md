@@ -62,6 +62,11 @@ uv run pytest -v
 ```
 
 ## Further technical improvements
+- Production hardening to app
+  - Proper CORS settings when running front and back on separate hosts 
+  - Authentication and user management
+    - FastAPI's own OAuth2
+    - E.g. Authlib for more elaborate setups
 - Infra with Terraform
   - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
   - Built frontend SPA from CDN (e.g. Cloudflare, AWS CloudFront)
@@ -71,6 +76,3 @@ uv run pytest -v
   - Run tests, package and publish container image (e.g. to AWS container registry), deploy to EKS
 - Testing
   - Could add frontend E2E tests with e.g. Playwright
-- Authentication and user management
-  - FastAPI's own OAuth2 with password and bearer
-  - E.g. Authlib for more elaborate setups

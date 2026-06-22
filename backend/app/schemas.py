@@ -1,6 +1,7 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
+
+from pydantic import BaseModel
 
 
 class CircuitBase(BaseModel):
@@ -24,3 +25,17 @@ class CircuitDiagramResponse(BaseModel):
     circuit: CircuitResponse
     diagram_base64: Optional[str] = None
     error: Optional[str] = None
+
+
+class ValidateRequest(BaseModel):
+    openqasm_code: str
+
+
+class ValidationError(BaseModel):
+    line: int = 0
+    message: str
+
+
+class ValidateResponse(BaseModel):
+    valid: bool
+    errors: List[ValidationError] = []

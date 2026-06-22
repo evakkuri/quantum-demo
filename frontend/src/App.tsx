@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CircuitViewer from "./components/CircuitViewer";
+import CircuitCreator from "./components/CircuitCreator";
 
 interface Circuit {
   id: number;
@@ -14,6 +15,7 @@ function App() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"viewer" | "create">("viewer");
 
   async function fetchCircuits() {
     setLoading(true);
@@ -37,6 +39,13 @@ function App() {
   useEffect(() => {
     fetchCircuits();
   }, []);
+
+  function handleCircuitCreated(newId: number) {
+    fetchCircuits().then(() => {
+      setSelectedId(newId);
+      setActiveTab("viewer");
+    });
+  }
 
   return (
     <div className="app">
@@ -70,10 +79,29 @@ function App() {
         </aside>
 
         <section className="viewer">
-          {selectedId ? (
-            <CircuitViewer circuitId={selectedId} />
+          <div className="tab-buttons">
+            <button
+              className={activeTab === "viewer" ? "active" : ""}
+              onClick={() => setActiveTab("viewer")}
+            >
+              Viewer
+            </button>
+            <button
+              className={activeTab === "create" ? "active" : ""}
+              onClick={() => setActiveTab("create")}
+            >
+              Create New
+            </button>
+          </div>
+
+          {activeTab === "viewer" ? (
+            selectedId ? (
+              <CircuitViewer circuitId={selectedId} />
+            ) : (
+              <p className="placeholder">Select a circuit to view it</p>
+            )
           ) : (
-            <p className="placeholder">Select a circuit to view it</p>
+            <CircuitCreator onCircuitCreated={handleCircuitCreated} />
           )}
         </section>
       </main>

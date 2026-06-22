@@ -1,11 +1,18 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
 
 from app.database import get_db
 from app.models import Circuit
-from app.schemas import CircuitCreate, CircuitResponse, CircuitDiagramResponse
-from app.qiskit_utils import generate_circuit_diagram
+from app.qiskit_utils import generate_circuit_diagram, validate_openqasm
+from app.schemas import (
+    CircuitCreate,
+    CircuitDiagramResponse,
+    CircuitResponse,
+    ValidateRequest,
+    ValidateResponse,
+)
 
 router = APIRouter(prefix="/api/circuits", tags=["circuits"])
 
@@ -50,3 +57,9 @@ def create_circuit(circuit_data: CircuitCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(circuit)
     return circuit
+
+
+@router.post("/validate", response_model=ValidateResponse)
+def validate_circuit(request: ValidateRequest):
+    valid, errors = validate_openqasm(request.openqasm_code)
+    return ValidateResponse(valid=valid, errors=errors)

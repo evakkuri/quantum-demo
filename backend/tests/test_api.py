@@ -104,3 +104,37 @@ def test_get_circuit_diagram():
     assert data["circuit"]["name"] == "Bell"
     # diagram should be base64 or have an error
     assert data["diagram_base64"] is not None or data["error"] is not None
+
+
+def test_validate_circuit_valid():
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": SAMPLE_QASM},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is True
+    assert len(data["errors"]) == 0
+
+
+def test_validate_circuit_invalid_header():
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": "qreg q[2];\nh q[0];"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is False
+    assert len(data["errors"]) > 0
+
+
+def test_validate_circuit_invalid_gate():
+    bad_qasm = 'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ninvalid_gate q[0];'
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": bad_qasm},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is False
+    assert len(data["errors"]) > 0

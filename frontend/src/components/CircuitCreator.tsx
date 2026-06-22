@@ -6,7 +6,8 @@ Validates QASM code against backend when writing.
 
 import { useState, useEffect } from "react";
 import QasmReference from "./QasmReference";
-import type { ValidationError } from "../types";
+import { apiFetch } from "../api";
+import type { Circuit, ValidationError, ValidateResponse } from "../types";
 
 interface Props {
   name: string;
@@ -42,12 +43,11 @@ export default function CircuitCreator({
     const timeoutId = setTimeout(async () => {
       setIsValidating(true);
       try {
-        const res = await fetch("/api/circuits/validate", {
+        const data = await apiFetch<ValidateResponse>("/api/circuits/validate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ openqasm_code: openqasm }),
         });
-        const data = await res.json();
         setIsValid(data.valid);
         setValidationErrors(data.errors || []);
       } catch {
@@ -71,18 +71,11 @@ export default function CircuitCreator({
     setError(null);
 
     try {
-      const res = await fetch("/api/circuits/", {
+      const created = await apiFetch<Circuit>("/api/circuits/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), openqasm_code: openqasm }),
       });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.detail || `HTTP ${res.status}`);
-      }
-
-      const created = await res.json();
       onCircuitCreated(created.id);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create circuit");

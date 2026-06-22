@@ -56,10 +56,17 @@ sprite-env services restart qmill
 
 ### Running Tests
 
+Backend:
+
 ```bash
-# Backend
+cd backend
 uv run pytest -v
-# Frontend
+```
+
+Frontend:
+
+```bash
+cd frontend
 npm test
 ```
 

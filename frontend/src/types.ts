@@ -10,3 +10,8 @@ export interface ValidationError {
   line: number;
   message: string;
 }
+
+export interface ValidateResponse {
+  valid: boolean;
+  errors: ValidationError[];
+}

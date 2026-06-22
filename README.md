@@ -2,6 +2,24 @@
 
 A web application for storing and visualizing OpenQASM quantum circuits.
 
+## What would be added next for prod
+- Production hardening to app
+  - Proper CORS settings when running front and back on separate hosts 
+  - Authentication and user management
+    - FastAPI's own OAuth2
+    - E.g. Authlib for more elaborate setups
+- Containerize backend app
+  - As first step would follow [FastAPI instructions](https://fastapi.tiangolo.com/deployment/docker/#docker-cache) 
+- Infra with Terraform
+  - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
+  - Built frontend SPA from CDN (e.g. Cloudflare, AWS CloudFront)
+  - Some other DB than local SQLite (e.g. RDS or DynamoDB)
+- Deployment automation
+  - E.g. with Github Actions or comparable depending on where codebase is hosted
+  - Run tests, package and publish container image (e.g. to AWS container registry), deploy to EKS
+- Testing
+  - Could add frontend E2E tests with e.g. Playwright
+
 ## Architecture
 
 ```mermaid
@@ -69,19 +87,3 @@ Frontend:
 cd frontend
 npm test
 ```
-
-## Next steps
-- Production hardening to app
-  - Proper CORS settings when running front and back on separate hosts 
-  - Authentication and user management
-    - FastAPI's own OAuth2
-    - E.g. Authlib for more elaborate setups
-- Infra with Terraform
-  - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
-  - Built frontend SPA from CDN (e.g. Cloudflare, AWS CloudFront)
-  - Some other DB than local SQLite (e.g. RDS or DynamoDB)
-- Deployment automation
-  - E.g. with Github Actions or comparable depending on where codebase is hosted
-  - Run tests, package and publish container image (e.g. to AWS container registry), deploy to EKS
-- Testing
-  - Could add frontend E2E tests with e.g. Playwright

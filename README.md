@@ -2,7 +2,7 @@
 
 A web application for storing and visualizing OpenQASM quantum circuits.
 
-## What would be added next for prod
+## What would be added next for actual deployment
 - Production hardening to app
   - Proper CORS settings when running front and back on separate hosts 
   - Authentication and user management

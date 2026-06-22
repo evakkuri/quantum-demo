@@ -138,3 +138,62 @@ def test_validate_circuit_invalid_gate():
     data = resp.json()
     assert data["valid"] is False
     assert len(data["errors"]) > 0
+
+
+def test_validate_circuit_single_qubit_superposition():
+    qasm = 'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nh q[0];'
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": qasm},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is True
+    assert len(data["errors"]) == 0
+
+
+def test_validate_circuit_ghz_state():
+    qasm = 'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[3];\nh q[0];\ncx q[0], q[1];\ncx q[0], q[2];'
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": qasm},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is True
+    assert len(data["errors"]) == 0
+
+
+def test_validate_circuit_teleportation():
+    qasm = (
+        "OPENQASM 2.0;\n"
+        'include "qelib1.inc";\n'
+        "qreg q[3];\n"
+        "creg c[2];\n"
+        "h q[1];\n"
+        "cx q[1], q[2];\n"
+        "cx q[0], q[1];\n"
+        "h q[0];\n"
+        "measure q[0] -> c[0];\n"
+        "measure q[1] -> c[1];"
+    )
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": qasm},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is True
+    assert len(data["errors"]) == 0
+
+
+def test_validate_circuit_out_of_range_qubit():
+    qasm = 'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\nh q[2];'
+    resp = client.post(
+        "/api/circuits/validate",
+        json={"openqasm_code": qasm},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["valid"] is False
+    assert len(data["errors"]) > 0

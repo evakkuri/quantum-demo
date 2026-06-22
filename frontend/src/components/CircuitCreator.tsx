@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 
 interface Props {
+  name: string;
+  onNameChange: (name: string) => void;
+  openqasm: string;
+  onOpenqasmChange: (qasm: string) => void;
   onCircuitCreated: (newId: number) => void;
 }
 
@@ -9,9 +13,13 @@ interface ValidationError {
   message: string;
 }
 
-export default function CircuitCreator({ onCircuitCreated }: Props) {
-  const [name, setName] = useState("");
-  const [openqasm, setOpenqasm] = useState("");
+export default function CircuitCreator({
+  name,
+  onNameChange,
+  openqasm,
+  onOpenqasmChange,
+  onCircuitCreated,
+}: Props) {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>(
     [],
   );
@@ -73,8 +81,6 @@ export default function CircuitCreator({ onCircuitCreated }: Props) {
 
       const created = await res.json();
       onCircuitCreated(created.id);
-      setName("");
-      setOpenqasm("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to create circuit");
     } finally {
@@ -93,7 +99,7 @@ export default function CircuitCreator({ onCircuitCreated }: Props) {
             id="circuit-name"
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => onNameChange(e.target.value)}
             placeholder="e.g., Bell State"
             required
           />
@@ -201,7 +207,7 @@ export default function CircuitCreator({ onCircuitCreated }: Props) {
           <textarea
             id="openqasm-code"
             value={openqasm}
-            onChange={(e) => setOpenqasm(e.target.value)}
+            onChange={(e) => onOpenqasmChange(e.target.value)}
             placeholder={`OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\nh q[0];\ncx q[0], q[1];`}
             rows={10}
             required

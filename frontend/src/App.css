@@ -136,6 +136,26 @@ body {
     font-size: 0.75rem;
 }
 
+.circuit-item--new {
+    color: var(--accent);
+    border-bottom: 2px solid var(--border);
+}
+
+.circuit-item--new:hover {
+    background: var(--surface-hover);
+}
+
+.circuit-item--new.active {
+    border-left-color: var(--accent);
+}
+
+.circuit-new-icon {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--accent);
+    opacity: 0.8;
+}
+
 .viewer {
     flex: 1;
     padding: 2rem;

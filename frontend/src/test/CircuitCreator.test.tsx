@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import { useState } from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import CircuitCreator from "../components/CircuitCreator";
 
@@ -9,6 +10,25 @@ h q[0];
 cx q[0], q[1];`;
 
 vi.useFakeTimers();
+
+// Controlled wrapper that holds the lifted state, mirroring how App.tsx uses the component.
+function CreatorWrapper({
+  onCircuitCreated,
+}: {
+  onCircuitCreated: (id: number) => void;
+}) {
+  const [name, setName] = useState("");
+  const [openqasm, setOpenqasm] = useState("");
+  return (
+    <CircuitCreator
+      name={name}
+      onNameChange={setName}
+      openqasm={openqasm}
+      onOpenqasmChange={setOpenqasm}
+      onCircuitCreated={onCircuitCreated}
+    />
+  );
+}
 
 describe("CircuitCreator", () => {
   const onCircuitCreated = vi.fn();
@@ -48,7 +68,7 @@ describe("CircuitCreator", () => {
   }
 
   it("renders form with name, QASM textarea, and submit button", () => {
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
 
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/openqasm/i)).toBeInTheDocument();
@@ -58,7 +78,7 @@ describe("CircuitCreator", () => {
   });
 
   it("submit button is disabled when form is empty", () => {
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
 
     expect(
       screen.getByRole("button", { name: /create circuit/i }),
@@ -68,7 +88,7 @@ describe("CircuitCreator", () => {
   it("shows validation error returned from backend", async () => {
     mockValidation(false, [{ line: 1, message: "Invalid QASM" }]);
 
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
     fillForm("Test", "bad qasm");
 
     await waitForValidation();
@@ -82,7 +102,7 @@ describe("CircuitCreator", () => {
   it("shows success message when backend returns valid", async () => {
     mockValidation(true);
 
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
     fillForm("Bell State", VALID_QASM);
 
     await waitForValidation();
@@ -93,7 +113,7 @@ describe("CircuitCreator", () => {
   it("enables submit button when name and valid QASM are provided", async () => {
     mockValidation(true);
 
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
     fillForm("Bell State", VALID_QASM);
 
     await waitForValidation();
@@ -106,7 +126,7 @@ describe("CircuitCreator", () => {
   it("submits to backend and calls onCircuitCreated on success", async () => {
     mockValidation(true);
 
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
     fillForm("Bell State", VALID_QASM);
 
     await waitForValidation();
@@ -128,7 +148,7 @@ describe("CircuitCreator", () => {
   });
 
   it("no validation message shown when QASM field is empty", () => {
-    render(<CircuitCreator onCircuitCreated={onCircuitCreated} />);
+    render(<CreatorWrapper onCircuitCreated={onCircuitCreated} />);
 
     fireEvent.change(screen.getByLabelText(/name/i), {
       target: { value: "Test" },

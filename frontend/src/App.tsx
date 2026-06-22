@@ -12,10 +12,11 @@ interface Circuit {
 
 function App() {
   const [circuits, setCircuits] = useState<Circuit[]>([]);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | "new" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"viewer" | "create">("viewer");
+  const [creatorName, setCreatorName] = useState("");
+  const [creatorQasm, setCreatorQasm] = useState("");
 
   async function fetchCircuits() {
     setLoading(true);
@@ -41,9 +42,10 @@ function App() {
   }, []);
 
   function handleCircuitCreated(newId: number) {
+    setCreatorName("");
+    setCreatorQasm("");
     fetchCircuits().then(() => {
       setSelectedId(newId);
-      setActiveTab("viewer");
     });
   }
 
@@ -64,6 +66,15 @@ function App() {
           </div>
           {error && <p className="error">{error}</p>}
           <ul className="circuit-list">
+            <li>
+              <button
+                className={`circuit-item circuit-item--new ${selectedId === "new" ? "active" : ""}`}
+                onClick={() => setSelectedId("new")}
+              >
+                <span className="circuit-name">New Circuit</span>
+                <span className="circuit-new-icon">+</span>
+              </button>
+            </li>
             {circuits.map((c) => (
               <li key={c.id}>
                 <button
@@ -79,29 +90,18 @@ function App() {
         </aside>
 
         <section className="viewer">
-          <div className="tab-buttons">
-            <button
-              className={activeTab === "viewer" ? "active" : ""}
-              onClick={() => setActiveTab("viewer")}
-            >
-              Viewer
-            </button>
-            <button
-              className={activeTab === "create" ? "active" : ""}
-              onClick={() => setActiveTab("create")}
-            >
-              Create New
-            </button>
-          </div>
-
-          {activeTab === "viewer" ? (
-            selectedId ? (
-              <CircuitViewer circuitId={selectedId} />
-            ) : (
-              <p className="placeholder">Select a circuit to view it</p>
-            )
+          {selectedId === "new" ? (
+            <CircuitCreator
+              name={creatorName}
+              onNameChange={setCreatorName}
+              openqasm={creatorQasm}
+              onOpenqasmChange={setCreatorQasm}
+              onCircuitCreated={handleCircuitCreated}
+            />
+          ) : selectedId !== null ? (
+            <CircuitViewer circuitId={selectedId} />
           ) : (
-            <CircuitCreator onCircuitCreated={handleCircuitCreated} />
+            <p className="placeholder">Select a circuit to view it</p>
           )}
         </section>
       </main>

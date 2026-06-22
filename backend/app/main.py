@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import SessionLocal, init_db
 from app.models import Circuit
@@ -44,16 +43,6 @@ app = FastAPI(
     description="API for storing and visualizing OpenQASM quantum circuits",
     version="1.0.0",
     lifespan=lifespan,
-)
-
-# Allow the Vite dev server to call the backend during local development.
-# In production the frontend is served by FastAPI itself (same origin), so
-# CORS is not needed there.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 app.include_router(router)

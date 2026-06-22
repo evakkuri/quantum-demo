@@ -68,7 +68,7 @@ sprite exec -- bash -c "cd /home/sprite/qmill_demo/backend && uv sync"
 sprite-env services create qmill \
   --cmd /home/sprite/.local/share/mise/shims/uv \
   --args "run uvicorn app.main:app --host 0.0.0.0 --port 8080" \
-  --workdir /home/sprite/qmill_demo/backend
+  --dir /home/sprite/qmill_demo/backend
 
 # 6. Make the URL publicly accessible
 sprite url update --auth public

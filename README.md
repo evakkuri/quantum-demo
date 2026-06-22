@@ -26,9 +26,10 @@ flowchart LR
 
 ## What would be added next for actual deployment
 - Infra with Terraform
-  - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
+  - Backend servers on EKS (both AWS services and k8s internals with Terraform, or could use e.g. kustomize)
   - Serve built frontend SPA from CDN (e.g. AWS CloudFront)
   - Persistent database (e.g. RDS)
+  - All other related services ("glue" services like secret management and container registry, maybe Cognito for user management)
 - Production hardening to app
   - Proper CORS settings when running front and back on separate hosts 
   - Authentication and user management

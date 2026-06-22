@@ -24,14 +24,14 @@ A web application for storing and visualizing OpenQASM quantum circuits.
 - **Quantum:** Qiskit (circuit parsing & diagram generation)
 - **Package Manager:** uv (Python), npm (Node)
 
-## Quick Start
+## Development
 
 ### Backend
 
 ```bash
 cd backend
-uv sync                    # Install dependencies
-uv run fastapi dev                 # Start server on :8000
+uv sync
+uv run fastapi dev
 ```
 
 ### Frontend
@@ -39,12 +39,10 @@ uv run fastapi dev                 # Start server on :8000
 ```bash
 cd frontend
 npm install
-npm run dev               # Start dev server on :8080, proxies /api to :8000
+npm run dev
 ```
 
-Open http://localhost:8080 in your browser.
-
-## Deploying to Sprites
+## Deployment to Sprite
 
 [Sprites](https://sprites.dev) are persistent microVM environments with a public URL. The app runs as a single process: FastAPI serves both the API and the built frontend on port 8080.
 
@@ -90,3 +88,10 @@ sprite-env services restart qmill
 cd backend
 uv run pytest -v
 ```
+
+## Further technical improvements
+- 
+- Authentication and user management
+  - FastAPI's own OAuth2 with password and bearer
+  - E.g. Authlib for more 
+- Serve built frontend SPA from CDN (e.g. Cloudflare, AWS)

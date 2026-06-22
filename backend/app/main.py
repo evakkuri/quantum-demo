@@ -3,8 +3,6 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 
 from app.database import SessionLocal, init_db
 from app.models import Circuit
@@ -62,13 +60,6 @@ def health_check():
     return {"status": "ok"}
 
 
-# Serve the built frontend in production.
-# Only activates when frontend/dist exists (i.e. after `npm run build`).
-if FRONTEND_DIST.is_dir():
-    assets_dir = FRONTEND_DIST / "assets"
-    if assets_dir.is_dir():
-        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
-
-    @app.get("/{full_path:path}")
-    def serve_spa(full_path: str):
-        return FileResponse(FRONTEND_DIST / "index.html")
+# Serve the built frontend in production (after `npm run build`).
+# check_dir=False so startup doesn't fail when dist doesn't exist yet in dev.
+app.frontend("/", directory=FRONTEND_DIST, check_dir=False)

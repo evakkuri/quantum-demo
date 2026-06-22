@@ -8,9 +8,10 @@ from app.database import SessionLocal, init_db
 from app.models import Circuit
 from app.routes import router
 
+# When deployed, frontend is served from static files via FastAPI
 FRONTEND_DIST = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 
-
+# Sample QASM from assignment, automatically added to SQLite
 SAMPLE_QASM = """OPENQASM 2.0;
 include "qelib1.inc";
 qreg q[2];
@@ -19,6 +20,7 @@ cx q[0], q[1];
 """
 
 
+# Seed DB on startup with the sample QASM
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
@@ -44,10 +46,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Allow the Vite dev server to call the backend during local development.
+# In production the frontend is served by FastAPI itself (same origin), so
+# CORS is not needed there.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=["http://localhost:8080"],
     allow_methods=["*"],
     allow_headers=["*"],
 )

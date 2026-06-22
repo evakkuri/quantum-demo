@@ -358,6 +358,60 @@ body {
     font-size: 0.875rem;
 }
 
+/* Circuit info panel */
+.circuit-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.circuit-info-stats {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.circuit-info-stats strong {
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-right: 0.35rem;
+}
+
+.circuit-info-gates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.gate-chip {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+}
+
+.circuit-ops {
+    list-style: decimal;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: var(--text);
+}
+
+.circuit-ops code {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: var(--surface-hover);
+    padding: 0.05rem 0.3rem;
+    border-radius: 3px;
+}
+
 /* OpenQASM reference panel */
 .qasm-reference {
     margin-bottom: 0.75rem;

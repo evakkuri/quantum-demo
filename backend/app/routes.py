@@ -7,7 +7,7 @@ from app.database import get_db
 from app.models import Circuit
 from app.qiskit_utils import (
     generate_circuit_diagram,
-    generate_circuit_text,
+    parse_circuit_info,
     validate_openqasm,
 )
 from app.schemas import (
@@ -43,18 +43,18 @@ def get_circuit_diagram(circuit_id: int, db: Session = Depends(get_db)):
     circuit = get_circuit_or_404(circuit_id, db)
 
     diagram_base64 = None
-    diagram_text = None
+    circuit_info = None
     error = None
     try:
         diagram_base64 = generate_circuit_diagram(circuit.openqasm_code)
-        diagram_text = generate_circuit_text(circuit.openqasm_code)
+        circuit_info = parse_circuit_info(circuit.openqasm_code)
     except Exception as e:
         error = f"Failed to generate diagram: {str(e)}"
 
     return CircuitDiagramResponse(
         circuit=CircuitResponse.model_validate(circuit),
         diagram_base64=diagram_base64,
-        diagram_text=diagram_text,
+        circuit_info=circuit_info,
         error=error,
     )
 

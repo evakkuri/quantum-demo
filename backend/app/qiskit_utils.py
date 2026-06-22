@@ -27,10 +27,23 @@ def generate_circuit_diagram(openqasm_code: str) -> str:
     return base64.b64encode(img_bytes).decode("utf-8")
 
 
-def generate_circuit_text(openqasm_code: str) -> str:
-    """Generate a Unicode text diagram of the circuit."""
+def parse_circuit_info(openqasm_code: str) -> dict:
+    """Return a structured summary of the parsed circuit."""
     qc = QuantumCircuit.from_qasm_str(openqasm_code)
-    return str(qc.draw("text"))
+
+    ops = []
+    for instr in qc.data:
+        qubits = [f"{q._register.name}[{q._index}]" for q in instr.qubits]
+        clbits = [f"{c._register.name}[{c._index}]" for c in instr.clbits]
+        ops.append({"gate": instr.operation.name, "qubits": qubits, "clbits": clbits})
+
+    return {
+        "num_qubits": qc.num_qubits,
+        "num_clbits": qc.num_clbits,
+        "depth": qc.depth(),
+        "gate_counts": dict(qc.count_ops()),
+        "ops": ops,
+    }
 
 
 def validate_openqasm(openqasm_code: str) -> tuple[bool, list[dict]]:

@@ -21,10 +21,24 @@ class CircuitResponse(CircuitBase):
     model_config = {"from_attributes": True}
 
 
+class GateOp(BaseModel):
+    gate: str
+    qubits: List[str]
+    clbits: List[str] = []
+
+
+class CircuitInfo(BaseModel):
+    num_qubits: int
+    num_clbits: int
+    depth: int
+    gate_counts: dict[str, int]
+    ops: List[GateOp]
+
+
 class CircuitDiagramResponse(BaseModel):
     circuit: CircuitResponse
     diagram_base64: Optional[str] = None
-    diagram_text: Optional[str] = None
+    circuit_info: Optional[CircuitInfo] = None
     error: Optional[str] = None
 
 

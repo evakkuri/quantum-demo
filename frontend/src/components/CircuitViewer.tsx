@@ -6,10 +6,24 @@ import { useState, useEffect } from "react";
 import { apiFetch } from "../api";
 import type { Circuit } from "../types";
 
+interface GateOp {
+  gate: string;
+  qubits: string[];
+  clbits: string[];
+}
+
+interface CircuitInfo {
+  num_qubits: number;
+  num_clbits: number;
+  depth: number;
+  gate_counts: Record<string, number>;
+  ops: GateOp[];
+}
+
 interface CircuitData {
   circuit: Circuit;
   diagram_base64: string | null;
-  diagram_text: string | null;
+  circuit_info: CircuitInfo | null;
   error: string | null;
 }
 
@@ -57,10 +71,39 @@ export default function CircuitViewer({ circuitId }: Props) {
         <p className="diagram-error">{data.error ?? "No diagram available"}</p>
       )}
 
-      {data.diagram_text && (
+      {data.circuit_info && (
         <div className="qasm-section">
-          <h3>Text Diagram</h3>
-          <pre className="qasm-code">{data.diagram_text}</pre>
+          <h3>Circuit Info</h3>
+          <div className="circuit-info">
+            <div className="circuit-info-stats">
+              <span>
+                <strong>Qubits</strong> {data.circuit_info.num_qubits}
+              </span>
+              <span>
+                <strong>Classical bits</strong> {data.circuit_info.num_clbits}
+              </span>
+              <span>
+                <strong>Depth</strong> {data.circuit_info.depth}
+              </span>
+            </div>
+            <div className="circuit-info-gates">
+              {Object.entries(data.circuit_info.gate_counts).map(
+                ([gate, count]) => (
+                  <span key={gate} className="gate-chip">
+                    {gate} ×{count}
+                  </span>
+                ),
+              )}
+            </div>
+            <ol className="circuit-ops">
+              {data.circuit_info.ops.map((op, i) => (
+                <li key={i}>
+                  <code>{op.gate}</code> {op.qubits.join(", ")}
+                  {op.clbits.length > 0 && <> → {op.clbits.join(", ")}</>}
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       )}
 

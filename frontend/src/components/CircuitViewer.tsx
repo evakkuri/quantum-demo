@@ -9,6 +9,7 @@ import type { Circuit } from "../types";
 interface CircuitData {
   circuit: Circuit;
   diagram_base64: string | null;
+  diagram_text: string | null;
   error: string | null;
 }
 
@@ -54,6 +55,13 @@ export default function CircuitViewer({ circuitId }: Props) {
         </div>
       ) : (
         <p className="diagram-error">{data.error ?? "No diagram available"}</p>
+      )}
+
+      {data.diagram_text && (
+        <div className="qasm-section">
+          <h3>Text Diagram</h3>
+          <pre className="qasm-code">{data.diagram_text}</pre>
+        </div>
       )}
 
       <div className="qasm-section">

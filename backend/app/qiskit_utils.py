@@ -27,6 +27,12 @@ def generate_circuit_diagram(openqasm_code: str) -> str:
     return base64.b64encode(img_bytes).decode("utf-8")
 
 
+def generate_circuit_text(openqasm_code: str) -> str:
+    """Generate a Unicode text diagram of the circuit."""
+    qc = QuantumCircuit.from_qasm_str(openqasm_code)
+    return str(qc.draw("text"))
+
+
 def validate_openqasm(openqasm_code: str) -> tuple[bool, list[dict]]:
     """Validate OpenQASM code. Returns (valid, errors)."""
     errors = []

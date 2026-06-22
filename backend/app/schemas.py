@@ -24,6 +24,7 @@ class CircuitResponse(CircuitBase):
 class CircuitDiagramResponse(BaseModel):
     circuit: CircuitResponse
     diagram_base64: Optional[str] = None
+    diagram_text: Optional[str] = None
     error: Optional[str] = None
 
 

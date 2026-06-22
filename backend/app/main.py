@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.database import init_db, SessionLocal
+from app.database import SessionLocal, init_db
 from app.models import Circuit
 from app.routes import router
+
+FRONTEND_DIST = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 
 
 SAMPLE_QASM = """OPENQASM 2.0;
@@ -55,3 +60,15 @@ app.include_router(router)
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
+
+
+# Serve the built frontend in production.
+# Only activates when frontend/dist exists (i.e. after `npm run build`).
+if FRONTEND_DIST.is_dir():
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    def serve_spa(full_path: str):
+        return FileResponse(FRONTEND_DIST / "index.html")

@@ -1,0 +1,33 @@
+# Version control / CI
+.git
+.github
+
+# Python
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.coverage
+**/htmlcov
+
+# Node / build output (the image rebuilds these)
+**/node_modules
+**/dist
+**/build
+**/*.tsbuildinfo
+
+# Local databases (created fresh at runtime)
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Editor / OS / env
+**/.vscode
+**/.idea
+**/.env
+**/.env.*
+**/.DS_Store
+**/*.log
+
+# Docs not needed in the image
+docs

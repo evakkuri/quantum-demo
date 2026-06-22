@@ -2,24 +2,6 @@
 
 A web application for storing and visualizing OpenQASM quantum circuits.
 
-## What would be added next for actual deployment
-- Production hardening to app
-  - Proper CORS settings when running front and back on separate hosts 
-  - Authentication and user management
-    - FastAPI's own OAuth2
-    - E.g. Authlib for more elaborate setups
-- Containerize backend app
-  - As first step would follow [FastAPI instructions](https://fastapi.tiangolo.com/deployment/docker/#docker-cache) 
-- Infra with Terraform
-  - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
-  - Built frontend SPA from CDN (e.g. Cloudflare, AWS CloudFront)
-  - Some other DB than local SQLite (e.g. RDS or DynamoDB)
-- Deployment automation
-  - E.g. with Github Actions or comparable depending on where codebase is hosted
-  - Run tests, package and publish container image (e.g. to AWS container registry), deploy to EKS
-- Testing
-  - Could add frontend E2E tests with e.g. Playwright
-
 ## Architecture
 
 ```mermaid
@@ -42,6 +24,23 @@ flowchart LR
 - **Quantum:** Qiskit (circuit parsing & diagram generation)
 - **Package Manager:** uv (Python), npm (Node)
 
+## What would be added next for actual deployment
+- Infra with Terraform
+  - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
+  - Serve built frontend SPA from CDN (e.g. AWS CloudFront)
+  - Persistent database (e.g. RDS)
+- Production hardening to app
+  - Proper CORS settings when running front and back on separate hosts 
+  - Authentication and user management
+    - FastAPI's own OAuth2
+    - E.g. Authlib for more elaborate setups
+    - (of course would also require quite a lot of changes to app and DB)
+- Deployment automation
+  - E.g. with Github Actions or comparable depending on where codebase is hosted
+  - Run tests, package and publish container image (e.g. to AWS container registry), deploy to EKS
+- Testing
+  - Could add frontend E2E tests with e.g. Playwright
+
 ## Development
 
 ### Backend
@@ -60,17 +59,20 @@ npm install
 npm run dev
 ```
 
-## Deployment
+### Container
 
-For demo purposes, app has been deployed into a [Sprite](https://sprites.dev). These are persistent microVM environments with a public URL. The app runs as a single process: FastAPI serves both the API and the built frontend on port 8080.
+The deployable app is packaged as a single image via
+[`Dockerfile`](./Dockerfile). Node builds the
+SPA, then FastAPI serves it alongside the API in one process.
 
-App is accessible at `https://qmill-demo-4bm7.sprites.app/`. 
-
-After a code change -> SSH into sprite, pull changes, rebuild, then redeploy with:
+Run locally:
 
 ```bash
-sprite-env services restart qmill
+docker build -t qmill-demo .
+docker run --rm -p 8080:8080 qmill-demo
 ```
+
+NOTE: The SQLite database is created inside the container and is ephemeral. Persistent DB would be one of the next steps for actual deployment.
 
 ### Running Tests
 

@@ -57,11 +57,13 @@ sprite-env services restart qmill
 ### Running Tests
 
 ```bash
-cd backend
+# Backend
 uv run pytest -v
+# Frontend
+npm test
 ```
 
-## Further technical improvements
+## Next steps
 - Production hardening to app
   - Proper CORS settings when running front and back on separate hosts 
   - Authentication and user management

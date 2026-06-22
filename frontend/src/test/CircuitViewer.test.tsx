@@ -146,7 +146,7 @@ describe("CircuitViewer", () => {
     });
 
     expect(fetch).toHaveBeenCalledTimes(2);
-    expect(fetch).toHaveBeenNthCalledWith(1, "/api/circuits/1/diagram");
-    expect(fetch).toHaveBeenNthCalledWith(2, "/api/circuits/2/diagram");
+    expect(fetch).toHaveBeenNthCalledWith(1, "/api/circuits/1/diagram", undefined);
+    expect(fetch).toHaveBeenNthCalledWith(2, "/api/circuits/2/diagram", undefined);
   });
 });

@@ -2,24 +2,27 @@ import base64
 import io
 import re
 
-import matplotlib
-import matplotlib.pyplot as plt
 from qiskit import QuantumCircuit
-
-matplotlib.use("Agg")
 
 
 def generate_circuit_diagram(openqasm_code: str) -> str:
     """Generate a circuit diagram from OpenQASM code and return as base64 PNG."""
+    # matplotlib is imported lazily so validation-only requests and startup
+    # don't pay its (heavy) import cost. use("Agg") must run before pyplot.
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
     qc = QuantumCircuit.from_qasm_str(openqasm_code)
 
     fig = qc.draw("mpl")
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight", dpi=150)
-    buf.seek(0)
-    img_bytes = buf.read()
-    buf.close()
-    plt.close(fig)
+    try:
+        with io.BytesIO() as buf:
+            fig.savefig(buf, format="png", bbox_inches="tight", dpi=150)
+            img_bytes = buf.getvalue()
+    finally:
+        plt.close(fig)
 
     return base64.b64encode(img_bytes).decode("utf-8")
 

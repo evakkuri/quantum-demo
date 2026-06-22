@@ -1,14 +1,8 @@
 import { useState, useEffect } from "react";
 import CircuitViewer from "./components/CircuitViewer";
 import CircuitCreator from "./components/CircuitCreator";
-
-interface Circuit {
-  id: number;
-  name: string;
-  openqasm_code: string;
-  created_at: string;
-  updated_at: string;
-}
+import { apiFetch } from "./api";
+import type { Circuit } from "./types";
 
 function App() {
   const [circuits, setCircuits] = useState<Circuit[]>([]);
@@ -22,9 +16,7 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/circuits/");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data: Circuit[] = await res.json();
+      const data = await apiFetch<Circuit[]>("/api/circuits/");
       setCircuits(data);
       if (data.length > 0 && selectedId === null) {
         setSelectedId(data[0].id);
@@ -47,6 +39,24 @@ function App() {
     fetchCircuits().then(() => {
       setSelectedId(newId);
     });
+  }
+
+  function renderViewer() {
+    if (selectedId === "new") {
+      return (
+        <CircuitCreator
+          name={creatorName}
+          onNameChange={setCreatorName}
+          openqasm={creatorQasm}
+          onOpenqasmChange={setCreatorQasm}
+          onCircuitCreated={handleCircuitCreated}
+        />
+      );
+    }
+    if (selectedId !== null) {
+      return <CircuitViewer circuitId={selectedId} />;
+    }
+    return <p className="placeholder">Select a circuit to view it</p>;
   }
 
   return (
@@ -89,21 +99,7 @@ function App() {
           </ul>
         </aside>
 
-        <section className="viewer">
-          {selectedId === "new" ? (
-            <CircuitCreator
-              name={creatorName}
-              onNameChange={setCreatorName}
-              openqasm={creatorQasm}
-              onOpenqasmChange={setCreatorQasm}
-              onCircuitCreated={handleCircuitCreated}
-            />
-          ) : selectedId !== null ? (
-            <CircuitViewer circuitId={selectedId} />
-          ) : (
-            <p className="placeholder">Select a circuit to view it</p>
-          )}
-        </section>
+        <section className="viewer">{renderViewer()}</section>
       </main>
     </div>
   );

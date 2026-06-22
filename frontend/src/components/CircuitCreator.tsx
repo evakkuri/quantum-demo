@@ -6,6 +6,7 @@ Validates QASM code against backend when writing.
 
 import { useState, useEffect } from "react";
 import QasmReference from "./QasmReference";
+import type { ValidationError } from "../types";
 
 interface Props {
   name: string;
@@ -13,11 +14,6 @@ interface Props {
   openqasm: string;
   onOpenqasmChange: (qasm: string) => void;
   onCircuitCreated: (newId: number) => void;
-}
-
-interface ValidationError {
-  line: number;
-  message: string;
 }
 
 export default function CircuitCreator({

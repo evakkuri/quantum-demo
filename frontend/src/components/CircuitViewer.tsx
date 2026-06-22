@@ -3,15 +3,11 @@ View stored circuit diagrams rendered from code.
 */
 
 import { useState, useEffect } from "react";
+import { apiFetch } from "../api";
+import type { Circuit } from "../types";
 
 interface CircuitData {
-  circuit: {
-    id: number;
-    name: string;
-    openqasm_code: string;
-    created_at: string;
-    updated_at: string;
-  };
+  circuit: Circuit;
   diagram_base64: string | null;
   error: string | null;
 }
@@ -29,19 +25,12 @@ export default function CircuitViewer({ circuitId }: Props) {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/circuits/${circuitId}/diagram`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((d: CircuitData) => {
-        setData(d);
-        setLoading(false);
-      })
+    apiFetch<CircuitData>(`/api/circuits/${circuitId}/diagram`)
+      .then(setData)
       .catch((e) => {
         setError(e instanceof Error ? e.message : "Failed to load circuit");
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   }, [circuitId]);
 
   if (loading) return <p className="loading">Loading circuit...</p>;

@@ -63,8 +63,10 @@ sprite exec -- bash -c "cd /home/sprite/qmill_demo/frontend && npm install && np
 sprite exec -- bash -c "cd /home/sprite/qmill_demo/backend && uv sync"
 
 # 5. Register as a persistent Service (auto-restarts after hibernation)
+# Services run without a login shell, so mise-managed tools aren't in PATH.
+# Use the full path to uv via mise's shims directory instead.
 sprite-env services create qmill \
-  --cmd uv \
+  --cmd /home/sprite/.local/share/mise/shims/uv \
   --args "run uvicorn app.main:app --host 0.0.0.0 --port 8080" \
   --workdir /home/sprite/qmill_demo/backend
 

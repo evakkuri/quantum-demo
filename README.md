@@ -4,16 +4,16 @@ A web application for storing and visualizing OpenQASM quantum circuits.
 
 ## Architecture
 
-```
-┌─────────────┐     ┌─────────────┐     ┌──────────┐
-│   React/TS   │────▶│  FastAPI    │────▶│  SQLite  │
-│   Frontend   │◀────│  Backend    │◀────│    DB    │
-└─────────────┘     └──────┬──────┘     └──────────┘
-                           │
-                     ┌─────▼─────┐
-                     │   Qiskit   │
-                     │ (diagrams) │
-                     └───────────┘
+```mermaid
+flowchart LR
+    FE["React / TypeScript\nVite"]
+    BE["FastAPI\nSQLAlchemy"]
+    DB[("SQLite")]
+    QK["Qiskit\nmatplotlib"]
+
+    FE -->|"REST /api"| BE
+    BE --> DB
+    BE -->|"diagram gen"| QK
 ```
 
 ## Tech Stack
@@ -90,8 +90,15 @@ uv run pytest -v
 ```
 
 ## Further technical improvements
-- 
+- Infra with Terraform
+  - Backend servers on EKS (both AWS services and k8s internals with Terrform, or could use e.g. kustomize)
+  - Built frontend SPA from CDN (e.g. Cloudflare, AWS CloudFront)
+  - Some other DB than local SQLite (e.g. RDS or DynamoDB)
+- Deployment automation
+  - E.g. with Github Actions or comparable depending on where codebase is hosted
+  - Run tests, package and publish container image (e.g. to AWS container registry), deploy to EKS
+- Testing
+  - Could add frontend E2E tests with e.g. Playwright
 - Authentication and user management
   - FastAPI's own OAuth2 with password and bearer
-  - E.g. Authlib for more 
-- Serve built frontend SPA from CDN (e.g. Cloudflare, AWS)
+  - E.g. Authlib for more elaborate setups
